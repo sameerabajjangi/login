@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+
+
+<style>
+
+  :root {
+    --p50:  #EEEDFE;
+    --p100: #CECBF6;
+    --p200: #AFA9EC;
+    --p400: #7F77DD;
+    --p600: #534AB7;
+    --p800: #3C3489;
+    --p900: #26215C;
+  }
+
+  
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  
+  body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background: var(--p900);
+    display: flex; align-items: center; justify-content: center;
+    overflow-x: hidden; position: relative;
+    padding: 2rem 0;
+  }
+
+  
+  .grid-bg {
+    position: fixed; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(175,169,236,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(175,169,236,0.07) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  
+  .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.22; animation: floatOrb 9s ease-in-out infinite; }
+  .orb-1 { width:500px; height:500px; background:var(--p400); top:-150px; left:-150px; animation-delay:0s; }
+  .orb-2 { width:400px; height:400px; background:var(--p200); bottom:-100px; right:-100px; animation-delay:-4s; }
+  .orb-3 { width:280px; height:280px; background:var(--p600); top:40%; left:55%; animation-delay:-2s; }
+  @keyframes floatOrb {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(15px,-25px) scale(1.04); }
+  }
+
+  
+  .register-wrapper {
+    position: relative; z-index: 10;
+    width: 100%; max-width: 480px; padding: 1.5rem;
+    animation: slideUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes slideUp {
+    from { opacity:0; transform:translateY(40px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* --- Glass card --- */
+  .register-card {
+    background: rgba(238,237,254,0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(206,203,246,0.15);
+    border-radius: 24px;
+    padding: 2.4rem 2rem;
+  }
+
+  /* --- Headings --- */
+  .reg-heading {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.85rem; color: #fff; line-height: 1.1;
+    margin-bottom: 0.35rem; letter-spacing: -1px;
+  }
+  .reg-sub { font-size: 14px; color: var(--p200); margin-bottom: 1.8rem; font-weight: 300; }
+
+  /* --- Name row (two columns) --- */
+  .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* --- Labels --- */
+  .form-label { font-size: 13px; font-weight: 500; color: var(--p100); margin-bottom: 6px; letter-spacing: 0.2px; display: block; }
+
+  /* --- Input group --- */
+  .input-group-custom { position: relative; margin-bottom: 1.1rem; }
+  .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--p400); pointer-events: none; }
+  .form-control-custom {
+    width: 100%;
+    background: rgba(238,237,254,0.08);
+    border: 1px solid rgba(206,203,246,0.2);
+    border-radius: 12px;
+    padding: 13px 14px 13px 42px;
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; transition: all 0.25s; outline: none;
+  }
+  .form-control-custom::placeholder { color: rgba(206,203,246,0.4); }
+  .form-control-custom:focus {
+    background: rgba(127,119,221,0.15);
+    border-color: var(--p400);
+    box-shadow: 0 0 0 3px rgba(127,119,221,0.2);
+  }
+
+  /* --- Password toggle --- */
+  .pw-toggle {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: var(--p400); cursor: pointer; padding: 0; transition: color 0.2s;
+  }
+  .pw-toggle:hover { color: var(--p200); }
+
+  /* --- Password strength bar --- */
+  .pw-strength-wrap { margin-top: -6px; margin-bottom: 10px; }
+  .pw-strength-bar { height: 4px; border-radius: 999px; background: rgba(206,203,246,0.15); overflow: hidden; margin-bottom: 4px; }
+  .pw-strength-fill { height: 100%; border-radius: 999px; width: 0%; transition: width 0.4s, background 0.4s; }
+  .pw-strength-label { font-size: 11px; color: var(--p200); }
+
+  /* --- Error messages --- */
+  .input-error { border-color: #F09595 !important; }
+  .error-msg { font-size: 12px; color: #F09595; margin-top: -8px; margin-bottom: 8px; padding-left: 2px; display: none; }
+  .error-msg.show { display: block; }
+
+  /* --- Terms checkbox --- */
+  .terms-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 1.4rem; margin-top: 0.2rem; }
+  .terms-row input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px;
+    border: 1.5px solid rgba(206,203,246,0.35); border-radius: 5px;
+    background: transparent; cursor: pointer; position: relative; transition: all 0.2s;
+  }
+  .terms-row input[type="checkbox"]:checked { background: var(--p600); border-color: var(--p600); }
+  .terms-row input[type="checkbox"]:checked::after {
+    content: ''; position: absolute;
+    top: 2px; left: 4px; width: 5px; height: 8px;
+    border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg);
+  }
+  .terms-row label { font-size: 13px; color: var(--p200); line-height: 1.5; cursor: pointer; }
+  .terms-row a { color: var(--p400); text-decoration: none; }
+  .terms-row a:hover { text-decoration: underline; }
+
+  /* --- Submit button --- */
+  .btn-register {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--p600), var(--p400));
+    border: none; border-radius: 12px; color: #fff;
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 15px; cursor: pointer; transition: all 0.25s;
+  }
+  .btn-register:hover { opacity: 0.9; }
+  .btn-register:active { transform: scale(0.98); }
+  .btn-register:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* --- Login link --- */
+  .login-row { text-align: center; font-size: 13px; color: rgba(206,203,246,0.5); margin-top: 1.3rem; }
+  .login-row a { color: var(--p400); font-weight: 500; text-decoration: none; }
+  .login-row a:hover { color: var(--p200); text-decoration: underline; }
+
+  /* --- Toast notifications --- */
+  .toast-msg {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    padding: 12px 22px; border-radius: 50px; border: 1px solid;
+    opacity: 0; pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+    z-index: 100; white-space: nowrap;
+  }
+  .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-msg.success { background: #1a3d2b; border-color: #2d6a4f; color: #74c69d; }
+  .toast-msg.error   { background: #3d1a1a; border-color: #a32d2d; color: #F09595; }
+  .toast-msg.info    { background: var(--p800); border-color: var(--p600); color: var(--p100); }
+
+  /* --- Spinner --- */
+  .spinner {
+    display: inline-block; width: 15px; height: 15px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: -3px; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* --- Success screen --- */
+  .success-screen { display: none; text-align: center; padding: 1rem 0; }
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(45,106,79,0.2); border: 2px solid #2d6a4f;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem;
+    animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes popIn { from { transform:scale(0.5); opacity:0; } to { transform:scale(1); opacity:1; } }
+  .success-screen h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; }
+  .success-screen p  { font-size: 14px; color: var(--p200); margin-bottom: 1.5rem; line-height: 1.6; }
+  .btn-go-login {
+    display: inline-block; padding: 12px 32px;
+    background: linear-gradient(135deg, var(--p600), var(--p400));
+    border-radius: 12px; color: #fff;
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 14px; text-decoration: none; transition: opacity 0.2s;
+  }
+  .btn-go-login:hover { opacity: 0.85; color: #fff; }
+
+  /* --- Responsive --- */
+  @media (max-width: 480px) {
+    .register-card { padding: 2rem 1.3rem; border-radius: 20px; }
+    .name-row { grid-template-columns: 1fr; }
+    .reg-heading { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Register Card -->
+<div class="register-wrapper">
+  <div class="register-card">
+
+    <!-- Form section -->
+    <div id="formSection">
+      <h1 class="reg-heading">Create account.</h1>
+      <p class="reg-sub">Join us — it's free.</p>
+
+      <form id="registerForm" novalidate>
+
+        <!-- Name row -->
+        <div class="name-row">
+          <div>
+            <label class="form-label" for="firstName">First name</label>
+            <div class="input-group-custom">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+              <input type="text" id="firstName" class="form-control-custom" placeholder="John" autocomplete="given-name" />
+            </div>
+            <div class="error-msg" id="firstNameErr"></div>
+          </div>
+          <div>
+            <label class="form-label" for="lastName">Last name</label>
+            <div class="input-group-custom">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+              <input type="text" id="lastName" class="form-control-custom" placeholder="Doe" autocomplete="family-name" />
+            </div>
+            <div class="error-msg" id="lastNameErr"></div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <label class="form-label" for="regEmail">Email address</label>
+        <div class="input-group-custom">
+          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <input type="email" id="regEmail" class="form-control-custom" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="error-msg" id="regEmailErr"></div>
+
+        <!-- Phone (optional) -->
+        <label class="form-label" for="phone">Phone <span style="color:rgba(206,203,246,0.4);font-weight:300;">(optional)</span></label>
+        <div class="input-group-custom">
+          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.5a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <input type="tel" id="phone" class="form-control-custom" placeholder="+91 9876543210" autocomplete="tel" />
+        </div>
+
+        <!-- Password -->
+        <label class="form-label" for="regPassword">Password</label>
+        <div class="input-group-custom">
+          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="regPassword" class="form-control-custom" placeholder="Min. 8 characters" autocomplete="new-password" />
+          <button type="button" class="pw-toggle" id="pwToggle1" aria-label="Toggle password">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <!-- Strength bar -->
+        <div class="pw-strength-wrap">
+          <div class="pw-strength-bar"><div class="pw-strength-fill" id="strengthFill"></div></div>
+          <span class="pw-strength-label" id="strengthLabel"></span>
+        </div>
+        <div class="error-msg" id="regPwErr"></div>
+
+        <!-- Confirm Password -->
+        <label class="form-label" for="confirmPw">Confirm password</label>
+        <div class="input-group-custom">
+          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="confirmPw" class="form-control-custom" placeholder="Re-enter your password" autocomplete="new-password" />
+          <button type="button" class="pw-toggle" id="pwToggle2" aria-label="Toggle confirm password">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="error-msg" id="confirmPwErr"></div>
+
+        <!-- Terms -->
+        <div class="terms-row">
+          <input type="checkbox" id="terms" />
+          <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <div class="error-msg" id="termsErr" style="margin-top:-10px;"></div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-register" id="registerBtn">Create Account</button>
+      </form>
+
+      <p class="login-row">Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+
+    <!-- Success screen (shown after registration) -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#74c69d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Account Created! 🎉</h2>
+      <p id="successMsg">Your account is ready. You can now sign in.</p>
+      <a href="login.html" class="btn-go-login">Go to Login →</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-msg" id="toast"></div>
+
+<!-- ==================== JS ==================== -->
+<script>
+  // ---- Eye icons ----
+  const eyeOpen = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const eyeOff  = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`;
+
+  // ---- Password toggles ----
+  function makeToggle(btnId, inputId) {
+    let vis = false;
+    document.getElementById(btnId).addEventListener('click', () => {
+      vis = !vis;
+      document.getElementById(inputId).type = vis ? 'text' : 'password';
+      document.getElementById(btnId).innerHTML = vis ? eyeOff : eyeOpen;
+    });
+  }
+  makeToggle('pwToggle1', 'regPassword');
+  makeToggle('pwToggle2', 'confirmPw');
+
+  // ---- Password strength ----
+  const regPw  = document.getElementById('regPassword');
+  const fill   = document.getElementById('strengthFill');
+  const lbl    = document.getElementById('strengthLabel');
+  regPw.addEventListener('input', () => {
+    const v = regPw.value;
+    let score = 0;
+    if (v.length >= 8)       score++;
+    if (/[A-Z]/.test(v))    score++;
+    if (/[0-9]/.test(v))    score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const levels = [
+      { pct:'0%',   color:'transparent', text:'' },
+      { pct:'25%',  color:'#F09595',     text:'Weak' },
+      { pct:'50%',  color:'#EF9F27',     text:'Fair' },
+      { pct:'75%',  color:'#7F77DD',     text:'Good' },
+      { pct:'100%', color:'#74c69d',     text:'Strong ✓' },
+    ];
+    const lvl = v.length === 0 ? levels[0] : (levels[score] || levels[1]);
+    fill.style.width      = lvl.pct;
+    fill.style.background = lvl.color;
+    lbl.textContent       = lvl.text;
+    lbl.style.color       = lvl.color;
+  });
+
+  // ---- Toast ----
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg, type = 'info', ms = 3500) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = 'toast-msg ' + type + ' show';
+    toastTimer = setTimeout(() => toast.classList.remove('show'), ms);
+  }
+
+  // ---- Helpers ----
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function setErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
+  function clearErr(id)    { document.getElementById(id).classList.remove('show'); }
+  function markErr(input)  { input.classList.add('input-error'); }
+  function clearMark(input){ input.classList.remove('input-error'); }
+
+  // ---- Form submit ----
+  const form = document.getElementById('registerForm');
+  const btn  = document.getElementById('registerBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const fn    = document.getElementById('firstName').value.trim();
+    const ln    = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const pw    = document.getElementById('regPassword').value;
+    const cpw   = document.getElementById('confirmPw').value;
+    const agreed= document.getElementById('terms').checked;
+
+    // Clear all errors
+    ['firstNameErr','lastNameErr','regEmailErr','regPwErr','confirmPwErr','termsErr'].forEach(clearErr);
+    ['firstName','lastName','regEmail','regPassword','confirmPw'].forEach(id => clearMark(document.getElementById(id)));
+
+    let ok = true;
+
+    if (!fn) { setErr('firstNameErr', '⚠ First name is required.'); markErr(document.getElementById('firstName')); ok = false; }
+    if (!ln) { setErr('lastNameErr',  '⚠ Last name is required.');  markErr(document.getElementById('lastName'));  ok = false; }
+
+    if (!isValidEmail(email)) {
+      setErr('regEmailErr', '⚠ Invalid email address.');
+      markErr(document.getElementById('regEmail')); ok = false;
+    }
+    if (pw.length < 8) {
+      setErr('regPwErr', '⚠ Password must be at least 8 characters.');
+      markErr(document.getElementById('regPassword')); ok = false;
+    }
+    if (pw !== cpw) {
+      setErr('confirmPwErr', '⚠ Passwords do not match.');
+      markErr(document.getElementById('confirmPw')); ok = false;
+    }
+    if (!agreed) {
+      setErr('termsErr', '⚠ You must agree to the Terms and Privacy Policy.');
+      ok = false;
+    }
+
+    if (!ok) { showToast('❌ Please fix the errors above.', 'error'); return; }
+
+    // Loading
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating account...';
+    await new Promise(r => setTimeout(r, 1500));
+    btn.disabled = false;
+    btn.innerHTML = 'Create Account';
+
+    // Check duplicate email
+    const users = JSON.parse(localStorage.getItem('apexUsers') || '[]');
+    if (users.find(u => u.email === email)) {
+      setErr('regEmailErr', '⚠ This email is already registered.');
+      markErr(document.getElementById('regEmail'));
+      showToast('❌ Email already in use.', 'error');
+      return;
+    }
+
+    // Save user
+    users.push({ name: fn + ' ' + ln, email, pw });
+    localStorage.setItem('apexUsers', JSON.stringify(users));
+
+    // Show success
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('successMsg').innerHTML =
+      'Welcome, <strong style="color:#fff">' + fn + ' ' + ln + '</strong>!<br>' +
+      'Account created for <strong style="color:#fff">' + email + '</strong>.<br>You can now sign in.';
+    document.getElementById('successScreen').style.display = 'block';
+    showToast('✅ Account created successfully!', 'success', 4000);
+  });
+
+  // ---- Live validation ----
+  document.getElementById('regEmail').addEventListener('input', function() {
+    if (isValidEmail(this.value.trim())) { clearErr('regEmailErr'); clearMark(this); }
+  });
+  document.getElementById('regPassword').addEventListener('input', function() {
+    if (this.value.length >= 8) { clearErr('regPwErr'); clearMark(this); }
+  });
+  document.getElementById('confirmPw').addEventListener('input', function() {
+    const pw = document.getElementById('regPassword').value;
+    if (this.value === pw && pw.length >= 8) { clearErr('confirmPwErr'); clearMark(this); }
+  });
+</script>
+</body>
+</html>
